@@ -1,8 +1,50 @@
-писать в нашу нейронку wayzen запрос чтобы он нам выдал места по категориям
-промт:"найди мне 15 мест для путешествия по Узбекистану по категории СПОРТ"(последнее слово меняется на другие категории)
-получить для каждой категории как минимум по 15 мест
-ввести эти места в бд, их фотки и координаты
-получается где-то 120 мест
-количество категорий 9:
-Спорт, История, Культура, Еда, Природа, ремесленичество, игры(гейм-клубы), приключения,  другие
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
+# Media files
+media/
+
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# database
+*.sqlite3
