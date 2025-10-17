@@ -1,0 +1,9 @@
+Django>=4.2
+python-decouple==3.8
+djangorestframework
+djangorestframework-simplejwt
+Pillow>=10.4.0
+google-generativeai>=0.8.3
+django-cors-headers==4.9.0
+
+
