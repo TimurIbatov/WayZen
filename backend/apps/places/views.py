@@ -1,8 +1,8 @@
 from .models import Place
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, generics
 from rest_framework.decorators import api_view, permission_classes
-from .models import Place, Category
-from .serializers import PlaceSerializer, CategorySerializer
+from .models import Place, Category, Favorite
+from .serializers import PlaceSerializer, CategorySerializer, FavoriteSerializer
 from django.contrib.auth import authenticate
 from django.db.models import Q
 
@@ -60,3 +60,14 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [permissions.AllowAny]
     lookup_field = "slug"
+
+
+class FavoriteViewSet(viewsets.ModelViewSet):
+    serializer_class = FavoriteSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Favorite.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

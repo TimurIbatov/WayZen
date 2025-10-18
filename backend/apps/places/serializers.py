@@ -1,5 +1,6 @@
+from dataclasses import field
 from rest_framework import serializers
-from .models import Place, Category
+from .models import Favorite, Place, Category
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -48,3 +49,26 @@ class PlaceSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("images must be a list of URLs")
         # Можно добавить проверку каждого URL-а
         return value
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    place_id = serializers.PrimaryKeyRelatedField(
+        queryset=Place.objects.all(), source="place", write_only=True
+    )
+    place = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Favorite
+        fields = ["id", "place", "place_id"]
+
+    def validate(self, attrs):
+        user = self.context["request"].user
+        place = attrs["place"]
+
+        if Favorite.objects.filter(user=user, place=place).exists():
+            raise serializers.ValidationError("Место уже добавлено в избранное.")
+        return attrs
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        return Favorite.objects.create(user=user, **validated_data)

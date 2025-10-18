@@ -26,6 +26,7 @@ class Place(models.Model):
     price_range = models.CharField(
         max_length=8, blank=True, help_text="Напр., '$', '$$'"
     )
+    is_hidden_gems = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -48,6 +49,12 @@ class Favorite(models.Model):
         on_delete=models.CASCADE,
         related_name="favorites",
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "place"], name="unique_favorite")
+        ]
+        ordering = ["id"]
 
     def __str__(self):
         return f"{self.user} → {self.place}"

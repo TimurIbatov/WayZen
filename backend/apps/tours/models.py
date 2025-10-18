@@ -33,11 +33,20 @@ class Tour(models.Model):
 
 
 class FavoriteTour(models.Model):
+    name = models.CharField(max_length=200, unique=True)
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name="favorite_tours",
     )
+    slug = models.SlugField(max_length=200, unique=True)
+    icon = models.CharField(
+        max_length=8, blank=True, help_text="Emoji или короткий значок"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["name"]
 
     def __str__(self):
-        return f"{self.user} → {self.place}"
+        return self.name

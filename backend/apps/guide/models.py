@@ -24,7 +24,6 @@ class Message(models.Model):
     )
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     content = models.TextField()
-    is_hidden_gems = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
