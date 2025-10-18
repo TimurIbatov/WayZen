@@ -36,7 +36,7 @@ class FavoriteTour(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="favorite tours",
+        related_name="favorite_tours",
     )
 
     def __str__(self):
