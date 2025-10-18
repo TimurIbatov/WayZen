@@ -1,7 +1,11 @@
 from rest_framework import serializers
-from .models import Place
-from apps.categories.models import Category
-from apps.categories.serializers import CategorySerializer
+from .models import Place, Category
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ["id", "name", "slug", "icon"]
 
 
 class PlaceSerializer(serializers.ModelSerializer):

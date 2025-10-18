@@ -37,7 +37,6 @@ THIRD_APPS = [
 
 LOCAL_APPS = [
     "apps.accounts",
-    "apps.categories",
     "apps.places",
     # "apps.guide",
 ]

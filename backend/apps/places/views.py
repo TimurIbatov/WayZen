@@ -1,11 +1,10 @@
 from .models import Place
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view, permission_classes
-from .models import Place
-from .serializers import PlaceSerializer
+from .models import Place, Category
+from .serializers import PlaceSerializer, CategorySerializer
 from django.contrib.auth import authenticate
 from django.db.models import Q
-from .pagination import StandardResultsSetPagination
 
 
 # Create your views here.
@@ -14,7 +13,6 @@ class PlaceViewSet(viewsets.ModelViewSet):
     serializer_class = PlaceSerializer
     permission_classes = [permissions.AllowAny]
     lookup_field = "slug"
-    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -55,3 +53,10 @@ class PlaceViewSet(viewsets.ModelViewSet):
             pass
 
         return qs
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.AllowAny]
+    lookup_field = "slug"
