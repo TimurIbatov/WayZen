@@ -2,11 +2,10 @@ from logging import config
 from pathlib import Path
 from datetime import timedelta
 from decouple import config
-import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "replace-me-for-dev")
+SECRET_KEY = config("DJANGO_SECRET_KEY", default="replace-me-for-dev")
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
@@ -35,11 +34,7 @@ THIRD_APPS = [
     "corsheaders",
 ]
 
-LOCAL_APPS = [
-    "apps.accounts",
-    "apps.places",
-    # "apps.guide",
-]
+LOCAL_APPS = ["apps.accounts", "apps.places", "apps.guide", "apps.tours"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_APPS + LOCAL_APPS
 

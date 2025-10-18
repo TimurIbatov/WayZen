@@ -1,6 +1,9 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
+
+User = get_user_model()
 
 
 class Place(models.Model):
@@ -36,7 +39,7 @@ class Place(models.Model):
 
 class Favorite(models.Model):
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.CASCADE,
         related_name="favorites",
     )
