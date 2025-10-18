@@ -1,6 +1,6 @@
 "use client"
 
-import { Star, MapPin, Heart, DollarSign, Sparkles } from "lucide-react"
+import { Star, MapPin, Heart, Plus, Check } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -8,42 +8,74 @@ import type { Place } from "@/lib/types"
 import { calculateTripCost } from "@/lib/cost-calculator"
 import Link from "next/link"
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useLanguage } from "@/lib/hooks/use-language"
+import { translateTag } from "@/lib/tag-translations"
+import { getCityKeyFromName, getCityTranslation } from "@/lib/cities"
 
-interface PlaceCardProps {
+interface PlaceCardWithAddProps {
   place: Place
   isFavorite: boolean
+  isInCart: boolean
   onToggleFavorite: (placeId: string) => void
+  onAddToCart: (place: Place) => void
+  onRemoveFromCart: (placeId: string) => void
 }
 
-export function PlaceCard({ place, isFavorite, onToggleFavorite }: PlaceCardProps) {
+export function PlaceCardWithAdd({
+  place,
+  isFavorite,
+  isInCart,
+  onToggleFavorite,
+  onAddToCart,
+  onRemoveFromCart,
+}: PlaceCardWithAddProps) {
+  const { t, language } = useLanguage()
   const cost = calculateTripCost([place], 1)
   const estimatedCost = Math.round(cost.totalCost)
-  const [isGeneratingDescription, setIsGeneratingDescription] = useState(false)
   const [generatedDescription, setGeneratedDescription] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const handleGenerateDescription = async () => {
-    setIsGeneratingDescription(true)
-    try {
-      const response = await fetch("/api/generate-description", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          placeName: place.name,
-          city: place.city,
-          category: place.categoryId,
-        }),
-      })
-      const data = await response.json()
-      if (data.description) {
-        setGeneratedDescription(data.description)
-      }
-    } catch (error) {
-      console.error("Error generating description:", error)
-    } finally {
-      setIsGeneratingDescription(false)
+  // Перевод города
+  const translateCityName = (cityName: string) => {
+    const cityKey = getCityKeyFromName(cityName)
+    if (cityKey) {
+      return getCityTranslation(cityKey, t)
     }
+    return cityName
   }
+
+  useEffect(() => {
+    const generateDescription = async () => {
+      try {
+        const response = await fetch("/api/generate-description", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            placeName: place.name,
+            city: place.city,
+            category: place.categoryId,
+          }),
+        })
+
+        if (!response.ok) {
+          setIsLoading(false)
+          return
+        }
+
+        const data = await response.json()
+        if (data.description && data.description.trim()) {
+          setGeneratedDescription(data.description)
+        }
+      } catch (error) {
+        console.error("Description generation error:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    generateDescription()
+  }, [place.id, place.name, place.city, place.categoryId])
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow border-slate-700 bg-slate-800/60 backdrop-blur-lg">
@@ -52,7 +84,7 @@ export function PlaceCard({ place, isFavorite, onToggleFavorite }: PlaceCardProp
           <Image src={place.images[0] || "/placeholder.svg"} alt={place.name} fill className="object-cover" />
           {place.isHidden && (
             <Badge className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-white flex items-center gap-1">
-              💎 Скрытая жемчужина
+              💎 {t("map.hiddenGem")}
             </Badge>
           )}
         </div>
@@ -79,7 +111,7 @@ export function PlaceCard({ place, isFavorite, onToggleFavorite }: PlaceCardProp
 
         <div className="flex items-center gap-1 text-sm text-gray-400 mb-2">
           <MapPin className="h-4 w-4" />
-          <span className="line-clamp-1">{place.city}</span>
+          <span className="line-clamp-1">{translateCityName(place.city)}</span>
         </div>
 
         <div className="flex items-center justify-between mb-3">
@@ -89,7 +121,6 @@ export function PlaceCard({ place, isFavorite, onToggleFavorite }: PlaceCardProp
             <span className="text-sm text-gray-400">({place.reviewCount})</span>
           </div>
           <div className="flex items-center gap-1 text-teal-400">
-            <DollarSign className="h-4 w-4" />
             <span className="font-semibold">~${estimatedCost}</span>
           </div>
         </div>
@@ -98,23 +129,41 @@ export function PlaceCard({ place, isFavorite, onToggleFavorite }: PlaceCardProp
           {generatedDescription || place.description}
         </p>
 
+        {/* Переведённые теги (флажки) */}
         <div className="flex flex-wrap gap-2 mt-3 mb-3">
           {place.tags.slice(0, 3).map((tag) => (
             <Badge key={tag} variant="secondary" className="text-xs bg-slate-700 text-gray-300">
-              {tag}
+              {translateTag(tag, language)}
             </Badge>
           ))}
         </div>
 
         <Button
-          onClick={handleGenerateDescription}
-          disabled={isGeneratingDescription}
-          variant="outline"
-          size="sm"
-          className="w-full border-slate-600 text-gray-300 hover:text-white hover:bg-slate-700/50 flex items-center justify-center gap-2 bg-transparent"
+          onClick={(e) => {
+            e.preventDefault()
+            if (isInCart) {
+              onRemoveFromCart(place.id)
+            } else {
+              onAddToCart(place)
+            }
+          }}
+          className={`w-full ${
+            isInCart
+              ? "bg-teal-500/20 text-teal-400 hover:bg-teal-500/30 border border-teal-500/50"
+              : "bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white"
+          }`}
         >
-          <Sparkles className="h-4 w-4" />
-          {isGeneratingDescription ? "Генерирую..." : "Описание от AI"}
+          {isInCart ? (
+            <>
+              <Check className="h-4 w-4 mr-2" />
+              {t("map.inCart")}
+            </>
+          ) : (
+            <>
+              <Plus className="h-4 w-4 mr-2" />
+              {t("map.addToCart")}
+            </>
+          )}
         </Button>
       </CardContent>
     </Card>

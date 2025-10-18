@@ -1,33 +1,74 @@
-# Media files
-media/
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
 
-# Static files
-staticfiles/
-static/
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
 
 # Environment variables
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*.local
 
-# IDEs
+# Django
+*.sqlite3
+db.sqlite3
+/media
+/media/*
+/staticfiles/
+/static/
+
+# IDEs / editors
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# DATA BASE 
-*.sqlite3
+# Logs
+*.log
 
-# Virtual environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+# Pyright / mypy cache
+.pyright/
+.mypy_cache/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# macOS
+.DS_Store
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files
+.env*
+
+
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
