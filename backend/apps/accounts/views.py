@@ -63,3 +63,13 @@ def login(request):
             "user": UserSerializer(user).data,
         }
     )
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def current_user(request):
+    """
+    Получение информации о текущем пользователе.
+    """
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data)
